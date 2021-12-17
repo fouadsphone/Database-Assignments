@@ -1,0 +1,130 @@
+CREATE TABLE ExisttingClients (
+   clientID char(9) NOT NULL,
+   firstName varchar (29) NOT NULL,
+   lastName varchar (29) NOT NULL,
+   address varchar (30) NOT NULL,
+   PRIMARY KEY (clientID)
+);
+INSERT INTO ExisttingClients (clientID,firstName, lastName,address)
+VALUES 
+('301245789','Gwen', 'Drek', 'North-vile'),
+('451278596', 'Chrek', D'iluc', 'Madrid'),
+('594815265', 'Indiana', 'Jones', 'Casablanca');
+
+CREATE TABLE ConfirmedClients (
+   clientID char(9) NOT NULL,
+   firstName varchar (29) NOT NULL,
+   lastName varchar (29) NOT NULL,
+   address varchar (30) NOT NULL,
+   confirmationSequence char(6) NOT NULL,
+   PRIMARY KEY (confirmationSequence)
+);
+INSERT INTO ConfirmedClients(clientID,firstName, lastName,address, confirmationSequence))
+VALUES 
+('301245789','Klen', 'chris', 'New York', '7644259'),
+('451278596', 'Dimitree', 'Dominos', 'Oslo', '9000088'),
+('594815265','Dandee', 'Khalid', 'Rabat', '20008957');
+CREATE TABLE AppliedClients (
+   clientID char(9) NOT NULL,
+   firstName varchar (29) NOT NULL,
+   lastName varchar (29) NOT NULL,
+   address varchar (30) NOT NULL,
+   applicationName varchar (30) NOT NULL,
+   applicationDD varchar (2)NOT NULL,
+   applicationDM varchar (2)NOT NULL,
+   applicationDY varchar (4)NOT NULL,
+   applicantStatus varchar (6) NOT NULL,
+   PRIMARY KEY (applicationName)
+);
+INSERT INTO AppliedClients(clientID,firstName, lastName,address, applicationName, applicationDD, applicationMM, applicationDY)
+VALUES 
+('301245789','Klen', 'chris', 'New York', 'Normal','11', '02','2002'),
+('451278596', 'Dimitree', 'Dominos', 'Oslo', 'special','31', '11','2000'),
+('594815265','Dandee', 'Khalid', 'Rabat', 'Normal','25', '07','2012');
+CREATE TABLE DeletedClients (
+   clientID char(9) NOT NULL,
+   reason varchar (20) NOT NULL,
+   PRIMARY KEY (reason)
+);
+INSERT INTO DeletedClients(clientID,reason)
+VALUES 
+('301245789', 'Not satisfied'),
+('451278596', 'Found better establishment'),
+('594815265', 'Completed treatment');
+CREATE TABLE Schedule (
+   clientID char(9) NOT NULL,
+   firstName varchar (29) NOT NULL,
+   lastName varchar (29) NOT NULL,
+   address varchar (30) NOT NULL,
+   meetingDate varchar (10)NOT NULL,
+   PRIMARY KEY (meetingDate)
+);
+
+
+CREATE SEQUENCE ClientIDs
+     START WITH 100000000
+     INCREMENT BY 1 
+     NOCACHE
+     NOCYCLE;
+CREATE SEQUENCE confirmationSequence
+     START WITH 1
+     INCREMENT BY 2 
+     NOCACHE
+     NOCYCLE;     
+     
+CREATE INDEX Clients
+ON ExisttingClients (clientID,firstName,lastName,address );
+     
+CREATE INDEX Quitting
+ON DeletedClients (clientID,reason);
+     
+CREATE INDEX Applicants
+ON AppliedClients (clientID,firstName,lastName,address,applicationName,applicationDate);
+
+CREATE INDEX Scheduled
+ON Schedule (clientID,firstName,lastName, meetingDate );;
+
+CREATE TRIGGER saftey
+ON ConfirmatedClients
+FOR
+INSERT,UPDATE, DELETE
+AS
+PRINT 'you can not create ,drop and alter table in this database'
+ROLLBACK;
+
+CREATE TRIGGER inserting
+ON AppliedClients
+AFTER INSERT
+AS
+BEGIN
+INSERT INTO applicantStatus VALUES('active')
+END
+
+CREATE FUNCTION WrittenDate
+ (
+ @applicationDD 
+ @applicationDM
+ @applicationDY
+ )
+ ON AppliedClients
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+	RETURN
+	 PRINT applicationDD ', 'applicationDM ', ' applicationDY 
+END
+ 
+CREATE PROCEDURE Clients  @clientID char(9) ,  @firstName varchar (29) 
+AS
+SELECT * FROM ExistingClients WHERE clientID = @clientID AND firstName= @firstName
+GO;
+
+CREATE PROCEDURE Scheduling @clientID char(9) NOT NULL,  @firstName varchar (29)NOT NULL ,@meetingDate varchar (10)NOT NULL
+AS
+SELECT * FROM Schedule WHERE clientID = @clientID AND firstName= @firstName AND meetingDate = @meetingDate 
+GO;
+
+
+
+
+
